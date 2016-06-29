@@ -203,7 +203,7 @@ public class SamsungUtil implements BLEFeatures, BLEActions{
         }
     };
 
-    public SamsungBLE(BLEService service) {
+    public SamsungUtil(BLEService service) {
         mService = service;
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBtAdapter == null) {

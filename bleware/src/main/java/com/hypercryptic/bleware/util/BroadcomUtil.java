@@ -66,8 +66,7 @@ public class BroadcomUtil implements BLEFeatures, BLEActions{
         }
 
         @Override
-        public void onCharacteristicRead(
-                BluetoothGattCharacteristic characteristic, int status) {
+        public void onCharacteristicRead(BluetoothGattCharacteristic characteristic, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 mService.bleCharacteristicRead(mAddress, characteristic
                         .getUuid().toString(), status, characteristic
@@ -76,16 +75,14 @@ public class BroadcomUtil implements BLEFeatures, BLEActions{
         }
 
         @Override
-        public void onCharacteristicChanged(
-                BluetoothGattCharacteristic characteristic) {
+        public void onCharacteristicChanged(BluetoothGattCharacteristic characteristic) {
             String address = mService.getNotificationAddress();
             mService.bleCharacteristicChanged(address, characteristic.getUuid()
                     .toString(), characteristic.getValue());
         }
 
         @Override
-        public void onDescriptorRead(BluetoothGattDescriptor descriptor,
-                                     int status) {
+        public void onDescriptorRead(BluetoothGattDescriptor descriptor, int status) {
             BLERequest request = mService.getCurrentRequest();
             String address = request.address;
             byte[] value = descriptor.getValue();

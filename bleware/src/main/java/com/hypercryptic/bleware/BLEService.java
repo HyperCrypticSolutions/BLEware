@@ -188,7 +188,7 @@ public class BLEService extends Service {
         sendBroadcast(intent);
     }
 
-    protected void bleNoBtAdapter()
+    public void bleNoBtAdapter()
     {
         Intent intent = new Intent(BLEService.BLE_NO_BT_ADAPTER);
         sendBroadcast(intent);
@@ -228,7 +228,7 @@ public class BLEService extends Service {
         return mBLE;
     }
 
-    protected void bleDeviceFound(BluetoothDevice device, int rssi, byte[] scanRecord, int source)
+    public void bleDeviceFound(BluetoothDevice device, int rssi, byte[] scanRecord, int source)
     {
         Log.d("blelib", "[" + new Date().toLocaleString() + "] device found " + device.getAddress());
         Intent intent = new Intent(BLEService.BLE_DEVICE_FOUND);
@@ -239,7 +239,7 @@ public class BLEService extends Service {
         sendBroadcast(intent);
     }
 
-    protected void bleGattConnected(BluetoothDevice device)
+    public void bleGattConnected(BluetoothDevice device)
     {
         Intent intent = new Intent(BLE_GATT_CONNECTED);
         intent.putExtra(EXTRA_DEVICE, device);
@@ -248,7 +248,7 @@ public class BLEService extends Service {
         requestProcessed(device.getAddress(), RequestType.CONNECT_GATT, true);
     }
 
-    protected void bleGattDisConnected(String address)
+    public void bleGattDisConnected(String address)
     {
         Intent intent = new Intent(BLE_GATT_DISCONNECTED);
         intent.putExtra(EXTRA_ADDR, address);
@@ -256,7 +256,7 @@ public class BLEService extends Service {
         requestProcessed(address, RequestType.CONNECT_GATT, false);
     }
 
-    protected void bleServiceDiscovered(String address)
+    public void bleServiceDiscovered(String address)
     {
         Intent intent = new Intent(BLE_SERVICE_DISCOVERED);
         intent.putExtra(EXTRA_ADDR, address);
@@ -264,7 +264,7 @@ public class BLEService extends Service {
         requestProcessed(address, RequestType.DISCOVER_SERVICE, true);
     }
 
-    protected void requestProcessed(String address, RequestType requestType, boolean success)
+    public void requestProcessed(String address, RequestType requestType, boolean success)
     {
         if(mCurrentRequest != null && mCurrentRequest.type == requestType)
         {
@@ -300,7 +300,7 @@ public class BLEService extends Service {
         }
     }
 
-    protected void bleCharacteristicRead(String address, String uuid, int status, byte[] value)
+    public void bleCharacteristicRead(String address, String uuid, int status, byte[] value)
     {
         Intent intent = new Intent(BLE_CHARACTERISTIC_READ);
         intent.putExtra(EXTRA_ADDR, address);
@@ -311,7 +311,7 @@ public class BLEService extends Service {
         requestProcessed(address, RequestType.READ_CHARACTERISTIC, true);
     }
 
-    protected void addBleRequest(BLERequest request)
+    public void addBleRequest(BLERequest request)
     {
         synchronized(mRequestQueue)
         {
@@ -386,7 +386,7 @@ public class BLEService extends Service {
         mRequestTimeout.start();
     }
 
-    protected BLERequest getCurrentRequest()
+    public BLERequest getCurrentRequest()
     {
         return mCurrentRequest;
     }
@@ -396,7 +396,7 @@ public class BLEService extends Service {
         this.mCurrentRequest = mCurrentRequest;
     }
 
-    protected void bleCharacteristicNotification(String address, String uuid, boolean isEnabled, int status)
+    public void bleCharacteristicNotification(String address, String uuid, boolean isEnabled, int status)
     {
         Intent intent = new Intent(BLE_CHARACTERISTIC_NOTIFICATION);
         intent.putExtra(EXTRA_ADDR, address);
@@ -415,7 +415,7 @@ public class BLEService extends Service {
         setNotificationAddress(address);
     }
 
-    protected void bleCharacteristicIndication(String address, String uuid, int status)
+    public void bleCharacteristicIndication(String address, String uuid, int status)
     {
         Intent intent = new Intent(BLE_CHARACTERISTIC_INDICATION);
         intent.putExtra(EXTRA_ADDR, address);
@@ -426,7 +426,7 @@ public class BLEService extends Service {
         setNotificationAddress(address);
     }
 
-    protected void bleCharacteristicWrite(String address, String uuid, int status)
+    public void bleCharacteristicWrite(String address, String uuid, int status)
     {
         Intent intent = new Intent(BLE_CHARACTERISTIC_WRITE);
         intent.putExtra(EXTRA_ADDR, address);
@@ -436,7 +436,7 @@ public class BLEService extends Service {
         requestProcessed(address, RequestType.WRITE_CHARACTERISTIC, true);
     }
 
-    protected void bleCharacteristicChanged(String address, String uuid, byte[] value)
+    public void bleCharacteristicChanged(String address, String uuid, byte[] value)
     {
         Intent intent = new Intent(BLE_CHARACTERISTIC_CHANGED);
         intent.putExtra(EXTRA_ADDR, address);
@@ -461,7 +461,7 @@ public class BLEService extends Service {
         sendBroadcast(intent);
     }
 
-    protected String getNotificationAddress()
+    public String getNotificationAddress()
     {
         return mNotificationAddress;
     }

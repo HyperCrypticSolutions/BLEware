@@ -96,7 +96,7 @@ public class GattCharacteristic {
         return 0;
     }
 
-    protected com.broadcom.bt.gatt.BluetoothGattCharacteristic getGattCharacteristicB()
+    public com.broadcom.bt.gatt.BluetoothGattCharacteristic getGattCharacteristicB()
     {
         return mGattCharacteristicB;
     }
@@ -281,7 +281,7 @@ public class GattCharacteristic {
         return Integer.valueOf((value[offset] & 0xFF) | (value[offset + 1] & 0xFF) << 8 | (value[offset + 2] & 0xFF) << 16);
     }
 
-    protected com.samsung.android.sdk.bt.gatt.BluetoothGattCharacteristic getGattCharacteristicS()
+    public com.samsung.android.sdk.bt.gatt.BluetoothGattCharacteristic getGattCharacteristicS()
     {
         return mGattCharacteristicS;
     }
