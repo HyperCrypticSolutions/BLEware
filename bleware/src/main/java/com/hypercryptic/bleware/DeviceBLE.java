@@ -2,6 +2,8 @@ package com.hypercryptic.bleware;
 
 import com.hypercryptic.bleware.blefeature.BLEActions;
 import com.hypercryptic.bleware.blefeature.BLEFeatures;
+import com.hypercryptic.bleware.BLERequest.RequestType;
+import com.hypercryptic.bleware.BLERequest.FailReason;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ import android.util.Log;
  * Created by sharukhhasan on 6/28/16.
  */
 public class DeviceBLE implements BLEFeatures, BLEActions{
-    protected static final String TAG = "blelib";
+    protected static final String TAG = "DeviceBLE";
 
     private BLEService mService;
     private BluetoothAdapter mBtAdapter;
@@ -38,21 +40,19 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
-        public void onLeScan(final BluetoothDevice device, int rssi,
-                             byte[] scanRecord) {
-            mService.bleDeviceFound(device, rssi, scanRecord,
-                    BleService.DEVICE_SOURCE_SCAN);
+        public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+            mService.bleDeviceFound(device, rssi, scanRecord, BLEService.DEVICE_SOURCE_SCAN);
         }
     };
 
     private BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status,
-                                            int newState) {
+        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState)
+        {
             String address = gatt.getDevice().getAddress();
-            Log.d(TAG, "onConnectionStateChange " + address + " status "
-                    + status + " newState " + newState);
-            if (status != BluetoothGatt.GATT_SUCCESS) {
+            Log.d(TAG, "onConnectionStateChange " + address + " status " + status + " newState " + newState);
+            if(status != BluetoothGatt.GATT_SUCCESS)
+            {
                 disconnect(address);
                 mService.bleGattDisConnected(address);
                 return;
@@ -60,7 +60,7 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
 
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 mService.bleGattConnected(gatt.getDevice());
-                mService.addBleRequest(new BleRequest(
+                mService.addBleRequest(new BLERequest(
                         RequestType.DISCOVER_SERVICE, address));
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 mService.bleGattDisConnected(address);
@@ -123,7 +123,7 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
                                       BluetoothGattDescriptor descriptor, int status) {
             String address = gatt.getDevice().getAddress();
             Log.d(TAG, "onDescriptorWrite " + address + " status " + status);
-            BleRequest request = mService.getCurrentRequest();
+            BLERequest request = mService.getCurrentRequest();
             if (request.type == RequestType.CHARACTERISTIC_NOTIFICATION
                     || request.type == RequestType.CHARACTERISTIC_INDICATION
                     || request.type == RequestType.CHARACTERISTIC_STOP_NOTIFICATION) {
@@ -149,7 +149,7 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
         };
     };
 
-    public AndroidBle(BleService service) {
+    public DeviceBLE(BLEService service) {
         mService = service;
         // btQuery = BTQuery.getInstance();
         if (!mService.getPackageManager().hasSystemFeature(
@@ -213,16 +213,16 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
     }
 
     @Override
-    public ArrayList<BleGattService> getServices(String address) {
+    public ArrayList<GattService> getServices(String address) {
         BluetoothGatt gatt = mBluetoothGatts.get(address);
         if (gatt == null) {
             return null;
         }
 
-        ArrayList<BleGattService> list = new ArrayList<BleGattService>();
+        ArrayList<GattService> list = new ArrayList<GattService>();
         List<BluetoothGattService> services = gatt.getServices();
         for (BluetoothGattService s : services) {
-            BleGattService service = new BleGattService(s);
+            GattService service = new GattService(s);
             // service.setInfo(btQuery.getGattServiceInfo(s.getUuid()));
             list.add(service);
         }
@@ -230,20 +230,18 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
     }
 
     @Override
-    public boolean requestReadCharacteristic(String address,
-                                             BleGattCharacteristic characteristic) {
+    public boolean requestReadCharacteristic(String address, GattCharacteristic characteristic) {
         BluetoothGatt gatt = mBluetoothGatts.get(address);
         if (gatt == null || characteristic == null) {
             return false;
         }
 
-        mService.addBleRequest(new BleRequest(RequestType.READ_CHARACTERISTIC,
+        mService.addBleRequest(new BLERequest(RequestType.READ_CHARACTERISTIC,
                 gatt.getDevice().getAddress(), characteristic));
         return true;
     }
 
-    public boolean readCharacteristic(String address,
-                                      BleGattCharacteristic characteristic) {
+    public boolean readCharacteristic(String address, GattCharacteristic characteristic) {
         BluetoothGatt gatt = mBluetoothGatts.get(address);
         if (gatt == null) {
             return false;
@@ -267,7 +265,7 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
     }
 
     @Override
-    public BleGattService getService(String address, UUID uuid) {
+    public GattService getService(String address, UUID uuid) {
         BluetoothGatt gatt = mBluetoothGatts.get(address);
         if (gatt == null) {
             return null;
@@ -277,28 +275,24 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
         if (service == null) {
             return null;
         } else {
-            return new BleGattService(service);
+            return new GattService(service);
         }
     }
 
     @Override
-    public boolean requestCharacteristicNotification(String address,
-                                                     BleGattCharacteristic characteristic) {
+    public boolean requestCharacteristicNotification(String address, GattCharacteristic characteristic) {
         BluetoothGatt gatt = mBluetoothGatts.get(address);
         if (gatt == null || characteristic == null) {
             return false;
         }
 
-        mService.addBleRequest(new BleRequest(
-                RequestType.CHARACTERISTIC_NOTIFICATION, gatt.getDevice()
-                .getAddress(), characteristic));
+        mService.addBleRequest(new BLERequest(RequestType.CHARACTERISTIC_NOTIFICATION, gatt.getDevice().getAddress(), characteristic));
         return true;
     }
 
     @Override
-    public boolean characteristicNotification(String address,
-                                              BleGattCharacteristic characteristic) {
-        BleRequest request = mService.getCurrentRequest();
+    public boolean characteristicNotification(String address, GattCharacteristic characteristic) {
+        BLERequest request = mService.getCurrentRequest();
         BluetoothGatt gatt = mBluetoothGatts.get(address);
         if (gatt == null || characteristic == null) {
             return false;
@@ -313,8 +307,7 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
             return false;
         }
 
-        BluetoothGattDescriptor descriptor = c
-                .getDescriptor(BleService.DESC_CCC);
+        BluetoothGattDescriptor descriptor = c.getDescriptor(BLEService.DESC_CCC);
         if (descriptor == null) {
             return false;
         }
@@ -335,29 +328,26 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
     }
 
     @Override
-    public boolean requestWriteCharacteristic(String address,
-                                              BleGattCharacteristic characteristic, String remark) {
+    public boolean requestWriteCharacteristic(String address, GattCharacteristic characteristic, String remark) {
         BluetoothGatt gatt = mBluetoothGatts.get(address);
         if (gatt == null || characteristic == null) {
             return false;
         }
 
-        mService.addBleRequest(new BleRequest(RequestType.WRITE_CHARACTERISTIC,
+        mService.addBleRequest(new BLERequest(RequestType.WRITE_CHARACTERISTIC,
                 gatt.getDevice().getAddress(), characteristic, remark));
         return true;
     }
 
     @Override
-    public boolean writeCharacteristic(String address,
-                                       BleGattCharacteristic characteristic) {
+    public boolean writeCharacteristic(String address, GattCharacteristic characteristic) {
         BluetoothGatt gatt = mBluetoothGatts.get(address);
         if (gatt == null) {
             return false;
         }
 
         Log.d("blelib", new String(Hex.encodeHex(characteristic.getGattCharacteristicA().getValue())));
-        return gatt
-                .writeCharacteristic(characteristic.getGattCharacteristicA());
+        return gatt.writeCharacteristic(characteristic.getGattCharacteristicA());
     }
 
     @Override
@@ -367,7 +357,7 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
             return false;
         }
 
-        mService.addBleRequest(new BleRequest(RequestType.CONNECT_GATT, address));
+        mService.addBleRequest(new BLERequest(RequestType.CONNECT_GATT, address));
         return true;
     }
 
@@ -380,30 +370,24 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
     }
 
     @Override
-    public boolean requestIndication(String address,
-                                     BleGattCharacteristic characteristic) {
+    public boolean requestIndication(String address, GattCharacteristic characteristic) {
         BluetoothGatt gatt = mBluetoothGatts.get(address);
         if (gatt == null || characteristic == null) {
             return false;
         }
 
-        mService.addBleRequest(new BleRequest(
-                RequestType.CHARACTERISTIC_INDICATION, gatt.getDevice()
-                .getAddress(), characteristic));
+        mService.addBleRequest(new BLERequest(RequestType.CHARACTERISTIC_INDICATION, gatt.getDevice().getAddress(), characteristic));
         return true;
     }
 
     @Override
-    public boolean requestStopNotification(String address,
-                                           BleGattCharacteristic characteristic) {
+    public boolean requestStopNotification(String address, GattCharacteristic characteristic) {
         BluetoothGatt gatt = mBluetoothGatts.get(address);
         if (gatt == null || characteristic == null) {
             return false;
         }
 
-        mService.addBleRequest(new BleRequest(
-                RequestType.CHARACTERISTIC_NOTIFICATION, gatt.getDevice()
-                .getAddress(), characteristic));
+        mService.addBleRequest(new BLERequest(RequestType.CHARACTERISTIC_NOTIFICATION, gatt.getDevice().getAddress(), characteristic));
         return true;
     }
 }
