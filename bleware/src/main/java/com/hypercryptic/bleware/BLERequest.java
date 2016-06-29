@@ -4,9 +4,10 @@ package com.hypercryptic.bleware;
  * Created by sharukhhasan on 6/28/16.
  */
 public class BLERequest {
+
     public enum RequestType {
         CONNECT_GATT, DISCOVER_SERVICE, CHARACTERISTIC_NOTIFICATION, CHARACTERISTIC_INDICATION, READ_CHARACTERISTIC, READ_DESCRIPTOR, READ_RSSI, WRITE_CHARACTERISTIC, WRITE_DESCRIPTOR, CHARACTERISTIC_STOP_NOTIFICATION
-    };
+    }
 
     public enum FailReason {
         START_FAILED, TIMEOUT, RESULT_FAILED
