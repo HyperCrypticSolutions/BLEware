@@ -179,6 +179,14 @@ public class BroadcomUtil implements BLEFeatures, BLEActions{
     }
 
     @Override
+    public String getMacAddress() {
+        if (mBtAdapter != null) {
+            return mBtAdapter.getAddress();
+        }
+        return null;
+    }
+
+    @Override
     public void startScan() {
         if (mScanning) {
             return;
@@ -204,7 +212,7 @@ public class BroadcomUtil implements BLEFeatures, BLEActions{
     }
 
     @Override
-    public boolean adapterEnabled() {
+    public boolean isAdapterEnabled() {
         if (mBtAdapter != null) {
             return mBtAdapter.isEnabled();
         }
@@ -321,14 +329,6 @@ public class BroadcomUtil implements BLEFeatures, BLEActions{
         }
         mService.addBleRequest(new BLERequest(RequestType.CONNECT_GATT, address));
         return true;
-    }
-
-    @Override
-    public String getBTAdapterMacAddr() {
-        if (mBtAdapter != null) {
-            return mBtAdapter.getAddress();
-        }
-        return null;
     }
 
     @Override

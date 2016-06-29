@@ -203,7 +203,7 @@ public class SamsungUtil implements BLEFeatures, BLEActions{
         }
     };
 
-    public SamsungBle(BLEService service) {
+    public SamsungBLE(BLEService service) {
         mService = service;
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBtAdapter == null) {
@@ -212,6 +212,14 @@ public class SamsungUtil implements BLEFeatures, BLEActions{
         }
         BluetoothGattAdapter.getProfileProxy(mService, mProfileServiceListener,
                 BluetoothGattAdapter.GATT);
+    }
+
+    @Override
+    public String getMacAddress() {
+        if (mBtAdapter != null) {
+            return mBtAdapter.getAddress();
+        }
+        return null;
     }
 
     @Override
@@ -240,7 +248,7 @@ public class SamsungUtil implements BLEFeatures, BLEActions{
     }
 
     @Override
-    public boolean adapterEnabled() {
+    public boolean isAdapterEnabled() {
         if (mBtAdapter != null) {
             return mBtAdapter.isEnabled();
         }
@@ -343,14 +351,6 @@ public class SamsungUtil implements BLEFeatures, BLEActions{
     public boolean requestConnect(String address) {
         mService.addBleRequest(new BLERequest(RequestType.CONNECT_GATT, address));
         return true;
-    }
-
-    @Override
-    public String getBTAdapterMacAddr() {
-        if (mBtAdapter != null) {
-            return mBtAdapter.getAddress();
-        }
-        return null;
     }
 
     @Override
