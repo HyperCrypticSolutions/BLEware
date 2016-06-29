@@ -30,6 +30,7 @@ import android.util.Log;
 /**
  * Created by sharukhhasan on 6/28/16.
  */
+@SuppressLint("NewApi")
 public class DeviceBLE implements BLEFeatures, BLEActions{
     protected static final String TAG = "DeviceBLE";
 
@@ -169,6 +170,11 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
     }
 
     @Override
+    public String getMacAddress() {
+        return null;
+    }
+
+    @Override
     public void startScan() {
         mBtAdapter.startLeScan(mLeScanCallback);
     }
@@ -176,6 +182,11 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
     @Override
     public void stopScan() {
         mBtAdapter.stopLeScan(mLeScanCallback);
+    }
+
+    @Override
+    public boolean isAdapterEnabled() {
+        return false;
     }
 
     @Override
