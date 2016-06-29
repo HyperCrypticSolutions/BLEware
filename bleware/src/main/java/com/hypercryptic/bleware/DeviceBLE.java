@@ -171,6 +171,9 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
 
     @Override
     public String getMacAddress() {
+        if (mBtAdapter != null) {
+            return mBtAdapter.getAddress();
+        }
         return null;
     }
 
@@ -186,11 +189,6 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
 
     @Override
     public boolean isAdapterEnabled() {
-        return false;
-    }
-
-    @Override
-    public boolean adapterEnabled() {
         if (mBtAdapter != null) {
             return mBtAdapter.isEnabled();
         }
@@ -370,14 +368,6 @@ public class DeviceBLE implements BLEFeatures, BLEActions{
 
         mService.addBleRequest(new BLERequest(RequestType.CONNECT_GATT, address));
         return true;
-    }
-
-    @Override
-    public String getBTAdapterMacAddr() {
-        if (mBtAdapter != null) {
-            return mBtAdapter.getAddress();
-        }
-        return null;
     }
 
     @Override
